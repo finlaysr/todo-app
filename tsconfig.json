@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "allowImportingTsExtensions": true,
+        "noEmit": true,
+        "lib": ["DOM", "ES2022"],
+        "paths": {
+            "@workspace/*": [
+                "./packages/*",
+                "./apps/*"
+            ]
+        },
+    }
+}
