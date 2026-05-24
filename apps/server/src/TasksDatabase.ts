@@ -3,7 +3,7 @@ import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import type { Todo_task, Todo_task_new } from 'shared-types';
+import type { Todo_task_new, Todo_task_noID } from 'shared-types';
 
 const databasePath = fileURLToPath(new URL('../db/data.db', import.meta.url));
 
@@ -32,6 +32,10 @@ class TasksDatabase {
         return this.db.prepare('SELECT * FROM "tasks" WHERE id = ?').get(taskID);
     }
 
+    taskExists(taskID: number): boolean {
+        return this.db.prepare('SELECT 1 FROM "tasks" WHERE id = ?').get(taskID) !== undefined;
+    }
+
     addNewTask(newTask: Todo_task_new) {
         this.db.prepare('INSERT INTO "tasks" (title, description) VALUES (?, ?)').run(
             newTask.title,
@@ -39,13 +43,19 @@ class TasksDatabase {
         );
     }
 
-    changeTask(taskID: number, updatedTask: Todo_task) {
+    changeTask(taskID: number, updatedTask: Todo_task_noID) {
         this.db.prepare('UPDATE "tasks" SET title = ?, description = ?, completed = ? WHERE id = ?').run(
             updatedTask.title,
             updatedTask.description,
             Number(updatedTask.completed),
             taskID
         );
+    }
+
+    patchTask(taskID: number, updatedTask: Partial<Todo_task_noID>) {
+        for (const [key, value] of Object.entries(updatedTask)) {
+            this.db.prepare(`UPDATE "tasks" SET ${key} = ? WHERE id = ?`).run(value, taskID);
+        }
     }
 
     deleteTask(taskID: number) {
