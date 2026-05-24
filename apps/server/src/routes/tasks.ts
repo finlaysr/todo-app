@@ -1,35 +1,39 @@
-import type { Todo_task_new } from 'shared-types';
-import { mkdirSync } from 'node:fs';
-import { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import type { Todo_task_new, Todo_task } from 'shared-types';
+import { TasksDatabase } from '../TasksDatabase.ts';
 import express from 'express';
 import { Router } from 'express';
-
-import Database from 'better-sqlite3';
 
 const router: Router = Router();
 router.use(express.json());
 
-const databasePath = fileURLToPath(new URL('../../db/data.db', import.meta.url));
-mkdirSync(dirname(databasePath), { recursive: true });
-const db = new Database(databasePath, { verbose: console.log });
-// Create tasks table if it doesn't exist
-db.prepare(`
-  CREATE TABLE IF NOT EXISTS "tasks" (
-	"id"	INTEGER NOT NULL UNIQUE,
-	"title"	TEXT NOT NULL,
-	"description"	TEXT,
-	"completed"	INTEGER NOT NULL DEFAULT 0 CHECK("completed" IN (0,1)),
-	PRIMARY KEY("id" AUTOINCREMENT)
-);`).run();
+const tasksDB = new TasksDatabase();
 
 // GET - return all tasks
 router.get('/', (req, res) => {
-  const tasks = db.prepare('SELECT * FROM "tasks"').all();
-
+  const tasks = tasksDB.getAllTasks();
   console.log('Returning tasks:', tasks);
+
   res.setHeader('Content-Type', 'application/json');
   res.json({ message: 'List of tasks', tasks: tasks });
+});
+
+// GET by id - return a single task
+router.get("/:id", (req, res) => {
+  let taskId: number;
+  try {
+    taskId = Number(req.params.id);
+  }
+  catch (error) {
+    console.error('Error parsing task ID:', error);
+    res.status(400).json({ message: 'Invalid task ID' });
+    return;
+  }
+  console.log('Updating task with ID:', taskId);
+
+  tasksDB.getTask(taskId);
+
+  res.setHeader('Content-Type', 'application/json');
+  res.json({ message: 'Task found', task: tasksDB.getTask(taskId) });
 });
 
 // POST - add a new task
@@ -37,16 +41,50 @@ router.post('/', (req, res) => {
   const newTaskReq: Todo_task_new = req.body;
   console.log('Received new task:', newTaskReq);
 
-  db.prepare('INSERT INTO "tasks" (title, description, completed) VALUES (?, ?, ?)').run(
-    newTaskReq.title,
-    newTaskReq.description,
-    0
-  );
+  tasksDB.addNewTask(newTaskReq);
 
-  const tasks = db.prepare('SELECT * FROM "tasks"').all();
-  console.log('All tasks:', tasks);
+  console.log('All tasks:', tasksDB.getAllTasks());
+  res.setHeader('Content-Type', 'application/json');
+  res.json({ message: 'Task created', tasks: tasksDB.getAllTasks() });
+});
 
-  res.json({ message: 'Task created', tasks: tasks });
+// PUT - update whole task
+router.put('/:id', (req, res) => {
+  let taskId: number;
+  try {
+    taskId = Number(req.params.id);
+  }
+  catch (error) {
+    console.error('Error parsing task ID:', error);
+    res.status(400).json({ message: 'Invalid task ID' });
+    return;
+  }
+  console.log('Updating task with ID:', taskId);
+
+  const taskReq: Todo_task = req.body;
+  tasksDB.changeTask(taskId, taskReq);
+
+  res.setHeader('Content-Type', 'application/json');
+  res.json({ message: 'Task updated', tasks: tasksDB.getAllTasks() });
+});
+
+// DELETE - delete a task
+router.delete('/:id', (req, res) => {
+  let taskId: number;
+  try {
+    taskId = Number(req.params.id);
+  }
+  catch (error) {
+    console.error('Error parsing task ID:', error);
+    res.status(400).json({ message: 'Invalid task ID' });
+    return;
+  }
+  console.log('Deleting task with ID:', taskId);
+
+  tasksDB.deleteTask(taskId);
+  
+  res.setHeader('Content-Type', 'application/json');
+  res.json({ message: 'Task deleted', tasks: tasksDB.getAllTasks() });
 });
 
 export default router;
