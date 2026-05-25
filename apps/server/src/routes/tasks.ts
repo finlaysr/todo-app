@@ -3,11 +3,9 @@ import { TasksDatabase } from '../TasksDatabase.ts';
 import express from 'express';
 import { Router } from 'express';
 import type {Request, Response} from 'express';
-import cors from 'cors';
 
 const router: Router = Router();
 router.use(express.json());
-router.use(cors());
 
 const tasksDB = new TasksDatabase();
 
