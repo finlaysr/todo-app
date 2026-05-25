@@ -3,9 +3,11 @@ import { TasksDatabase } from '../TasksDatabase.ts';
 import express from 'express';
 import { Router } from 'express';
 import type {Request, Response} from 'express';
+import cors from 'cors';
 
 const router: Router = Router();
 router.use(express.json());
+router.use(cors());
 
 const tasksDB = new TasksDatabase();
 
@@ -30,7 +32,6 @@ router.get("/:id", (req: Request, res: Response) => {
 
   const task = tasksDB.getTask(taskId);
   res.setHeader('Content-Type', 'application/json');
-
   if (!task) {
     res.status(404).json({ message: `Task with ID ${taskId} not found` });
     return;
