@@ -2,7 +2,7 @@ import type { Todo_task_new, Todo_task, Todo_task_noID } from 'shared-types';
 import { TasksDatabase } from '../TasksDatabase.ts';
 import express from 'express';
 import { Router } from 'express';
-import type {Request, Response} from 'express';
+import type { Request, Response } from 'express';
 
 const router: Router = Router();
 router.use(express.json());
@@ -40,7 +40,7 @@ router.get("/:id", (req: Request, res: Response) => {
 // POST - add a new task
 router.post('/', (req: Request, res: Response) => {
   const newTaskReq: Todo_task_new = req.body;
-  console.log('Received new task:', newTaskReq);
+  console.log('Received new task:', req);
 
   tasksDB.addNewTask(newTaskReq);
 

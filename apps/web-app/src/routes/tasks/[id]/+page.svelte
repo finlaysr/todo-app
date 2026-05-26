@@ -1,10 +1,15 @@
 <script lang="ts">
     import type { PageProps } from "./$types";
+    import type { Todo_task } from "shared-types";
+
     let { data }: PageProps = $props();
-    console.log("Page data:", data.task);
+    let task: Todo_task = data.task;
+
+    console.log("Page data:", task);
 </script>
 
-<h1>Task Details</h1>
-<h2>{data.task.title}</h2>
-<p>{data.task.description}</p>
-<p>Completed: {data.task.completed ? "Yes" : "No"}</p>
+<h2>Task Details</h2>
+<button onclick={() => window.location.reload()}>Refresh</button>
+<h3>{task.title}</h3>
+<p>{task.description}</p>
+<p>Completed: {task.completed ? "Yes" : "No"}</p>
