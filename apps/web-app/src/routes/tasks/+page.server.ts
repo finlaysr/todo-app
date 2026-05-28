@@ -16,5 +16,6 @@ export const actions: Actions = {
             body: JSON.stringify({ title, description }),
         });
         throw redirect(303, '/tasks');
+        window.location.reload();
     },
 };

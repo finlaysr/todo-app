@@ -27,7 +27,8 @@
 <hr />
 
 {@render children()}
-
+<br />
+<br />
 <hr />
 <p class="footer">This is a footer</p>
 

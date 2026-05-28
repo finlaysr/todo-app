@@ -1,36 +1,13 @@
 <script lang="ts">
     import type { Todo_task } from "shared-types";
     import binIcon from "$lib/assets/bin.svg";
+    import { deleteTask, toggleTaskCompleted } from "$lib/tasks/taskActions";
+    import checkbox_complete from "$lib/assets/checkbox-complete.svg";
+    import checkbox_empty from "$lib/assets/checkbox-empty.svg";
+
     let { task }: { task: Todo_task } = $props();
 
     // import { toggleTaskCompleted } from "$lib/toggleTaskCompleted";
-    export async function toggleTaskCompleted(
-        taskID: number,
-        current: boolean,
-    ) {
-        console.log(`Toggling completed status for task with id: ${taskID}`);
-        console.log(`Current status: ${current}`);
-
-        await fetch(`http://localhost:8080/api/tasks/${taskID}`, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ completed: !current ? 1 : 0 }),
-        });
-    }
-
-    export async function deleteTask(taskID: number) {
-        await fetch(`http://localhost:8080/api/tasks/${taskID}`, {
-            method: "DELETE",
-        })
-            .catch((error) => {
-                console.error("Error deleting task:", error);
-            })
-            .then(() => {
-                console.log(`Task with id ${taskID} deleted successfully`);
-            });
-    }
 </script>
 
 <a href={`/tasks/${task.id}`}>
@@ -39,12 +16,24 @@
             onclick={(e) => {
                 e.preventDefault();
                 toggleTaskCompleted(task.id, task.completed);
-            }}>{task.completed ? "Completed" : "Uncompleted"}</button
-        >
+            }}
+            >{#if task.completed}
+                <img
+                    src={checkbox_complete}
+                    alt="Mark as Incomplete"
+                    height="30px"
+                />
+            {:else}
+                <img
+                    src={checkbox_empty}
+                    alt="Mark as Complete"
+                    height="30px"
+                />
+            {/if}
+        </button>
 
         <h3>{task.title}</h3>
         <p>{task.description}</p>
-        <p>Completed: {task.completed ? "Yes" : "No"}</p>
 
         <button
             onclick={(e) => {
@@ -72,6 +61,7 @@
         flex-direction: row;
         gap: 20px;
         align-items: center;
+        min-width: fit-content;
     }
     div:hover {
         background-color: #ffecd0;

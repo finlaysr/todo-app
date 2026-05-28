@@ -10,6 +10,7 @@ a {
 button {
     padding: 5px 10px;
     align-items: center;
+    text-align: center;
     border: none;
     border-radius: 10px;
     background-color: #ffa50a;
