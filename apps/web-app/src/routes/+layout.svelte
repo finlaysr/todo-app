@@ -1,14 +1,29 @@
 <script lang="ts">
 	import favicon from "$lib/assets/favicon.svg";
+	import refreshIcon from "$lib/assets/refresh.svg";
+	import addIcon from "$lib/assets/add.svg";
+	import "$lib/global.css";
 
 	let { children } = $props();
 </script>
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
+	<title>Todo App</title>
 </svelte:head>
 
-<p class="heading">Todo App</p>
+<div class="header">
+	<a href="/">Todo App</a>
+	<div>
+		<button onclick={() => window.location.reload()}>
+			<img src={refreshIcon} alt="Refresh" height="30px" width="auto" />
+		</button>
+		<button onclick={() => (window.location.href = "/tasks")}>
+			<img src={addIcon} alt="Add Task" height="30px" width="auto" />
+		</button>
+	</div>
+</div>
+
 <hr />
 
 {@render children()}
@@ -17,10 +32,13 @@
 <p class="footer">This is a footer</p>
 
 <style>
-	.heading {
+	.header {
 		font-size: 2em;
 		font-weight: bold;
-		text-align: center;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 20px 0;
 	}
 
 	.footer {

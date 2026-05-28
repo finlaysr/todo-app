@@ -9,7 +9,6 @@
 </script>
 
 <h2>Task Details</h2>
-<button onclick={() => window.location.reload()}>Refresh</button>
 <h3>{task.title}</h3>
 <p>{task.description}</p>
 <p>Completed: {task.completed ? "Yes" : "No"}</p>

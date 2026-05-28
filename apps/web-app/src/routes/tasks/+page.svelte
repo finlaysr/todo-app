@@ -10,7 +10,6 @@
 </script>
 
 <h2>All Tasks</h2>
-<button onclick={() => window.location.reload()}>Refresh</button>
 {#each tasks as task}
     <TaskItem {task}></TaskItem>
 {/each}

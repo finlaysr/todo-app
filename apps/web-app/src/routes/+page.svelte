@@ -1,1 +1,1 @@
-<a href="/tasks">Go to Tasks</a>
+<button onclick={() => (window.location.href = "/tasks")}>Go to Tasks</button>
