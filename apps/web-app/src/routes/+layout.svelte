@@ -4,6 +4,8 @@
 	import addIcon from "$lib/assets/add.svg";
 	import "$lib/global.css";
 
+	import { taskCache } from "$lib/tasks/taskCache.svelte";
+
 	let { children } = $props();
 </script>
 
@@ -15,7 +17,7 @@
 <div class="header">
 	<a href="/">Todo App</a>
 	<div>
-		<button onclick={() => window.location.reload()}>
+		<button onclick={async () => await taskCache.updateAllTasks()}>
 			<img src={refreshIcon} alt="Refresh" height="30px" width="auto" />
 		</button>
 		<button onclick={() => (window.location.href = "/tasks")}>

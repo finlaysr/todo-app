@@ -1,19 +1,12 @@
 import type { PageLoad } from "./$types";
+import { error } from "@sveltejs/kit";
 
-export const load: PageLoad = async ({ fetch, params }) => {
-    console.log("Loading task with ID:", params.id);
-    const res = await fetch(`http://localhost:8080/api/tasks/${params.id}`, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    });
-    if (res.status !== 200) {
-        console.error("Failed to load task with id: ", params.id, "Status:", res.status);
-        return;
-    }
-    const data = await res.json();
-    const task = data.task;
-    console.log(task);
-    return { task: task };
+export const load: PageLoad = async ({ params }) => {
+  const taskID = Number(params.id);
+
+  if (Number.isNaN(taskID)) {
+    throw error(400, `Invalid task ID: ${params.id}`);
+  }
+
+  return { taskID };
 };

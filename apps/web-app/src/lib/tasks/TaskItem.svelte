@@ -1,23 +1,24 @@
 <script lang="ts">
     import type { Todo_task } from "shared-types";
     import binIcon from "$lib/assets/bin.svg";
-    import { deleteTask, toggleTaskCompleted } from "$lib/tasks/taskActions";
     import checkbox_complete from "$lib/assets/checkbox-complete.svg";
     import checkbox_empty from "$lib/assets/checkbox-empty.svg";
 
+    import { taskCache } from "$lib/tasks/taskCache.svelte";
     let { task }: { task: Todo_task } = $props();
-
-    // import { toggleTaskCompleted } from "$lib/toggleTaskCompleted";
 </script>
 
 <a href={`/tasks/${task.id}`}>
     <div>
         <button
-            onclick={(e) => {
+            onclick={async (e) => {
                 e.preventDefault();
-                toggleTaskCompleted(task.id, task.completed);
+                await taskCache.toggleTaskCompleted(
+                    task.id,
+                    task?.completed || false,
+                );
             }}
-            >{#if task.completed}
+            >{#if task?.completed}
                 <img
                     src={checkbox_complete}
                     alt="Mark as Incomplete"
@@ -32,13 +33,13 @@
             {/if}
         </button>
 
-        <h3>{task.title}</h3>
-        <p>{task.description}</p>
+        <h3>{task?.title}</h3>
+        <p>{task?.description}</p>
 
         <button
-            onclick={(e) => {
+            onclick={async (e) => {
                 e.preventDefault();
-                deleteTask(task.id);
+                await taskCache.deleteTask(task.id);
             }}
             id="delete-task"
         >

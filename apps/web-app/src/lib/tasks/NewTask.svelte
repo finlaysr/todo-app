@@ -1,4 +1,20 @@
-<form method="POST" action="?/create">
+<script lang="ts">
+    import { enhance } from "$app/forms";
+    import { taskCache } from "$lib/tasks/taskCache.svelte";
+</script>
+
+<form
+    method="POST"
+    action="?/create"
+    use:enhance={() => {
+        return async ({ result, update }) => {
+            if (result.type === "success") {
+                taskCache.updateAllTasks();
+                await update();
+            }
+        };
+    }}
+>
     <h2>Create New Task</h2>
     <div>
         <label for="title">Title:</label>

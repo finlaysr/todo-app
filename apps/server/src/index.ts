@@ -14,7 +14,7 @@ app.use(cors(corsOptions));
 app.use('/api/tasks', tasksRouter);
 
 app.get('/', (req, res) => {
-  res.send('Main Page');
+    res.send('Main Page');
 });
 
 app.listen(PORT, () => {

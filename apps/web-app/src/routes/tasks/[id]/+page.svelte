@@ -1,31 +1,40 @@
 <script lang="ts">
-    import type { PageProps } from "./$types";
     import type { Todo_task } from "shared-types";
-    import { deleteTask, toggleTaskCompleted } from "$lib/tasks/taskActions";
+    import type { PageProps } from "./$types";
+    import { taskCache } from "$lib/tasks/taskCache.svelte";
+    import { onMount } from "svelte";
 
     let { data }: PageProps = $props();
-    let task: Todo_task = data.task;
+    let taskID = $derived(data.taskID);
 
-    console.log("Page data:", task);
+    taskCache.init();
+    let task = $derived(taskCache.getTaskWithID(taskID));
 </script>
 
 <h2>Task Details</h2>
-<h3>{task.title}</h3>
-<p>{task.description}</p>
-<p>Completed: {task.completed ? "Yes" : "No"}</p>
-<button
-    onclick={(_) => {
-        toggleTaskCompleted(task.id, task.completed);
-    }}
-    id="toggle-task"
->
-    Mark as {task.completed ? "Incomplete" : "Complete"}
-</button>
-<button
-    onclick={(_) => {
-        deleteTask(task.id);
-    }}
-    id="delete-task"
->
-    Delete Task
-</button>
+{#if task}
+    <h3>{task.title}</h3>
+    <p>{task.description}</p>
+    <p>Completed: {task.completed ? "Yes" : "No"}</p>
+    <button
+        onclick={async () => {
+            if (!task) return;
+            await taskCache.toggleTaskCompleted(task.id, task.completed);
+        }}
+        id="toggle-task"
+    >
+        Mark as {task.completed ? "Incomplete" : "Complete"}
+    </button>
+    <button
+        onclick={async () => {
+            if (!task) return;
+            await taskCache.deleteTask(task.id);
+            window.location.href = "/tasks";
+        }}
+        id="delete-task"
+    >
+        Delete Task
+    </button>
+{:else}
+    <p>Loading task...</p>
+{/if}
